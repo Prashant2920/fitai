@@ -1,29 +1,33 @@
-// src/components/Register.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../api';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../api";
+import "../styles/Register.css";
+
 
 const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(""); // Reset error state
+
     try {
-      const userData = { name, email, password };
-      await registerUser(userData);
-      navigate('/login'); // Redirect to login page after successful registration
+      const response = await registerUser({ name, email, password });
+      alert(response.message); // Show success message
+      navigate("/login"); // Redirect to login page
     } catch (err) {
-      setError('Registration failed');
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <div className="register-form">
+    <div className="form-container">
       <h2>Register</h2>
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -46,7 +50,6 @@ const Register = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && <p className="error-message">{error}</p>}
         <button type="submit">Register</button>
       </form>
     </div>

@@ -1,29 +1,33 @@
-// src/components/Login.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../api';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../api";
+import "../styles/Login.css";
+
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(""); // Reset error state
+
     try {
-      const userData = { email, password };
-      const response = await loginUser(userData);
-      localStorage.setItem('token', response.token); // Save JWT token in localStorage
-      navigate('/profile'); // Redirect to profile page on successful login
+      const response = await loginUser({ email, password });
+      alert(response.message); // Show success message
+      localStorage.setItem("token", response.token); // Save token to localStorage
+      navigate("/dashboard"); // Redirect to dashboard
     } catch (err) {
-      setError('Invalid credentials');
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <div className="login-form">
+    <div className="form-container">
       <h2>Login</h2>
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -39,7 +43,6 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && <p className="error-message">{error}</p>}
         <button type="submit">Login</button>
       </form>
     </div>
